@@ -1,0 +1,24 @@
+.plp {
+    display: flex;
+    gap: 20px;
+}
+
+.filters {
+    width: 250px;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.card {
+    border: 1px solid #ddd;
+    padding: 12px;
+}
+
+img {
+    width: 100px;
+    height: auto;
+}
