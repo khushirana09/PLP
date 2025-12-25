@@ -16,8 +16,42 @@ router.post("/", async (req, res) => {
 //GET Product   read all product  R 
 router.get("/", async (req, res) => {
     try {
-        const products = await Product.find();
-        res.status(200).json(products); //array
+
+        //get page & limit from query para,s
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 6;
+
+        // calculate skip
+        const skip = (page - 1) * limit;
+
+        const { category, search } = req.query;
+
+        //filter object (empty initially)
+        let filter = {};
+
+        //category filter
+        if (category) {
+            filter.category = category;
+        }
+
+        //search filter (title search)
+        if (search) {
+            filter.title = { $regex: search, $options: "i" };
+        }
+
+        //total product count
+        const totalProducts = await Product.countDocuments(filter);
+
+        //fetch paginated products
+        const products = await Product.find(filter)
+            .skip(skip)
+            .limit(limit);
+        res.json({
+            products,
+            totalProducts,
+            totalPages: Math.ceil(totalProducts / limit),
+            currentPage: page,
+        }); //array
     } catch (error) {
         res.status(500).json({ message: "Failed to fetch products" });
     }
